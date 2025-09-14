@@ -2,38 +2,16 @@ import argparse
 import os
 
 from DirectoryIterator import return_files_list_in_directory
+from lines_of_code_counter import read_lines_of_code_in_file
+
+# test_directory
+#py locloc.py -p test_directory
+# test file
+#py locloc.py -p loc.py
 
 
-def read_lines_of_code_in_file(filepath: str) -> int:
-    line_count = 0
-
-    if not os.path.isfile(filepath):
-        print('INVALID FILE')
-        return 0
-
-
-    opened_file = open(filepath, 'r', errors='ignore')
-
-    if not opened_file:
-        print('File not found')
-        opened_file.close()
-        return 0
-
-    for line in opened_file.read():
-        if line == '\n':
-            line_count += 1
-
-    opened_file.close()
-
-    # debug
-    #print(f"LINE COUNT: {line_count}")
-
-    # we add a plus one since it doesn't read the last line
-    return line_count + 1
-
-# testing on itself
-# read_lines_of_code_in_file("LOC.py")
-
+#NOTE: A LINES OF CODE READER,
+#py locloc.py - for help
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Prints lines of code for a file or directory, for a specific file type"
@@ -45,13 +23,11 @@ if __name__ == "__main__":
     )
 
     # TODO: add in the ability to parse by file extension
-    ''' 
     parser.add_argument(
-        "-e", "--ext", metavar="extension type",
-        required=False, help="specific file extension we are looking for, defaults to all openable files if not specified",
+        "-e", "--ext", nargs='*', metavar="extension type",
+        help="specific file extension we are looking for, defaults to all openable files if not specified",
         default= ""
     )
-    '''
 
     args = parser.parse_args()
 
@@ -59,7 +35,7 @@ if __name__ == "__main__":
     if os.path.isfile(args.path):
         print(f"TOTAL COUNT {read_lines_of_code_in_file(args.path)}")
     elif os.path.isdir(args.path):
-        files_list = return_files_list_in_directory(args.path, )
+        files_list = return_files_list_in_directory(args.path, args.ext)
         total_count = 0
         for file in files_list:
             total_count += read_lines_of_code_in_file(file)
